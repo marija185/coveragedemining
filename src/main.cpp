@@ -316,7 +316,7 @@ int main(int argc, char** argv)
       bool skipgoal=false;
       for (uint i = 0; i < goals.size();i++){
         if ((fabs(goals[i].x-goal.x)+fabs(goals[i].y-goal.y)+200.*(1-cos(goals[i].th-goal.th))<100.)){ 
-//          skipgoal=true;
+          skipgoal=true;
           std::cerr<<"skipping goal ("<<goal.x<<","<<goal.y<<") close to old goal ("<<goals[i].x<<","<<goals[i].y<<")"<<std::endl;
           break;
         }
@@ -329,21 +329,33 @@ int main(int argc, char** argv)
       }
     }else{//vozi
     
-//      if ((CCD->checkIfStuck(numnewcells,M->setvel.v*M->metric,M->setvel.w))){
-//        gobackwards=true;
-//        startcycle=M->ciklus; 
-//        M->voznja=false;
-//      }else{
-//        gobackwards=false;
-//      }
+      if ((CCD->checkIfStuck(numnewcells,M->setvel.v*M->metric,M->setvel.w))){
+        gobackwards=true;
+        startcycle=M->ciklus; 
+        M->voznja=false;
+      }else{
+        gobackwards=false;
+      }
 
-//      int pathflag=CCD->planCoveragePath();//ne replanira nego se samo mice po starom putu
-//      if (pathflag==2) continue; 
-//      R_point goal=CCD->getGoal();//odredjuje cilj i putanje u realnim koordinatama za logiranje
-//      if ((goal.x!=M->goal.x) && (goal.y!=M->goal.y)){
-//        M->gotogoal(goal);
-      
-//      }
+#if 0
+      int pathflag=CCD->planCoveragePath();//ne replanira nego se samo mice po starom putu
+      if (pathflag==2) continue; 
+      R_point goal=CCD->getGoal();//odredjuje cilj i putanje u realnim koordinatama za logiranje
+      bool skipgoal=false;
+      for (uint i = 0; i < goals.size();i++){
+        if ((fabs(goals[i].x-goal.x)+fabs(goals[i].y-goal.y)+200.*(1-cos(goals[i].th-goal.th))<100.)){ 
+          skipgoal=true;
+          std::cerr<<"skipping goal ("<<goal.x<<","<<goal.y<<") close to old goal ("<<goals[i].x<<","<<goals[i].y<<")"<<std::endl;
+          break;
+        }
+      }
+      if (skipgoal){ 
+        CCD->disableCoverageOfArea(goal,350.); //okolina u milimetrima koju ce oznaciti da ne prekriva na mjestu toola i za getgoal da preskoci
+      }else{
+        goals.push_back(goal);
+        M->gotogoal(goal);
+      }
+#endif
     }
     
     }else { //gobackwards==true 
