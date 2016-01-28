@@ -8,6 +8,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 find_package(movingobstaclesrhc REQUIRED)
+find_package(cspacevoroandrea REQUIRED)
 find_package(Boost REQUIRED COMPONENTS signals)
 find_package(OpenMP)
 if(OPENMP_FOUND)
@@ -26,11 +27,12 @@ find_package(catkin REQUIRED COMPONENTS
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${movingobstaclesrhc_INCLUDE_DIRS}
+  ${cspacevoroandrea_INCLUDE_DIRS}
   include
 )
 
 add_executable(coverage src/main.cpp src/CCDStar.cpp)
-target_link_libraries(coverage ${movingobstaclesrhc_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(coverage ${movingobstaclesrhc_LIBRARIES} ${cspacevoroandrea_LIBRARIES} ${catkin_LIBRARIES})
 
 
 

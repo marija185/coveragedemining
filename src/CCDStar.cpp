@@ -55,8 +55,8 @@ int CCDStar::setCoverageOnRobotCurrentPosition(double RBx, double RBy, double RB
       }
 			if (1) //(prviput==0) 
 			{
-				double sirina=550.;//700.;//1530.;//tolko je sirok
-				double duljina=550.;//1100.;//3005.;
+				double sirina=700.;//550.;//700.;//1530.;//tolko je sirok
+				double duljina=1100;//550.;//1100.;//3005.;
 				double flaill=0.;//700.;//1450.;//tool dodatak na duzinu
 				double flailw=0.;//485.;//tool //to je dodatak na sirinu
 //				int pomak_x=celx-StartRacunac.x;
@@ -97,8 +97,8 @@ int CCDStar::setCoverageOnRobotCurrentPosition(double RBx, double RBy, double RB
 					while (sqrt((temp_r.x - nextedge.x) * (temp_r.x - nextedge.x) + (temp_r.y - nextedge.y) *
 		(temp_r.y - nextedge.y)) < 2*distmp)//iza jos tolko zato 2
 					{
-						if (GM->check_point(temp_r) && ((RBx-temp_r.x)*(RBx-temp_r.x)+(RBy-temp_r.y)*(RBy-temp_r.y)<RR*RR))
-						{
+//						if ((RBx-temp_r.x)*(RBx-temp_r.x)+(RBy-temp_r.y)*(RBy-temp_r.y)<RR*RR) //kruzni robot
+						if (GM->check_point(temp_r)){
 							if (map[GM->cell_point_temp.x][GM->cell_point_temp.y].total_cost_int<time_stamp_counter-1){
 //							if (map[GM->cell_point_temp.x][GM->cell_point_temp.y].tag_preklop<time_stamp_counter-1){
 								map[GM->cell_point_temp.x][GM->cell_point_temp.y].presao=std::max(map[GM->cell_point_temp.x][GM->cell_point_temp.y].presao,0)+1;//oznaka presao za vozilo
@@ -1931,7 +1931,7 @@ void CCDStar::reset(int ponovo)
 	  preslik.y=-1.;
 	  distance_robot_tool=0.; //900.;
 	  MR=6;//ovo se vise ne koristi - odredjuje se put robota ali se ne gleda
-	  robot_mask=2;//maska toola - sve se prekriva samo s toolom
+	  robot_mask=3;//maska toola - sve se prekriva samo s toolom
 	  redund=0;//ako hocu 1 polje preklapanje onda stavim 1, 2 polja preklapanje stavim 2, 0 bez preklapanja
 	  preklapanje=2*robot_mask-redund;
 	  numcycles=0;

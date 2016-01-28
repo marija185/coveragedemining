@@ -18,6 +18,7 @@
   <build_depend>visualization_msgs</build_depend>
   <build_depend>message_filters</build_depend>
   <build_depend>movingobstaclesrhc</build_depend>
+  <build_depend>cspacevoroandrea</build_depend>
   
   <run_depend>std_msgs</run_depend>
   <run_depend>std_srvs</run_depend>
@@ -32,6 +33,7 @@
   <run_depend>visualization_msgs</run_depend>
   <run_depend>message_filters</run_depend>
   <run_depend>movingobstaclesrhc</run_depend>
+  <run_depend>cspacevoroandrea</run_depend>
 
 </package>
 
