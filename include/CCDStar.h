@@ -3,8 +3,8 @@
 
 #include <DStar.h>
 
-static const int x7ofs[ 4 ] = { 0, 7, -7, 0};
-static const int y7ofs[ 4 ] = {-7, 0, 0, 7};
+static const int x7ofs[ 4 ] = { 0, 9, -9, 0};
+static const int y7ofs[ 4 ] = {-9, 0, 0, 9};
 //static const int x7ofs[ 4 ] = { 0, 5, -5, 0};
 //static const int y7ofs[ 4 ] = {-5, 0, 0, 5};
 static const int x6ofs[ 4 ] = { 0, 6, -6, 0};

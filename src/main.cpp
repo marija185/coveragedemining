@@ -216,6 +216,7 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "coverage");
   int startcycle;
   bool gobackwards=false;
+  int backwardsign=1;
   ros::NodeHandle nh;
   M = new moj(nh);
   
@@ -333,6 +334,7 @@ int main(int argc, char** argv)
         gobackwards=true;
         startcycle=M->ciklus; 
         M->voznja=false;
+        backwardsign=1;//da ide u rikverc
       }else{
         gobackwards=false;
       }
@@ -362,10 +364,11 @@ int main(int argc, char** argv)
       printf("RIKVERC                       RIKVERC                        RIKVERC\n\n\n");
       if (M->ciklus>startcycle+10){
         gobackwards=false;
+        backwardsign*=-1; //alternira predznak, ici ce naprijed ako nije uspio nazad
         M->voznja=false; //true;
       }
       geometry_msgs::Twist vel;
-		  vel.linear.x = -0.15;
+		  vel.linear.x = -0.15*backwardsign;
 		  vel.angular.z = 0;//0.75;
 		  vel.linear.y = 0;
 		  M->vel_pub.publish(vel);

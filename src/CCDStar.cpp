@@ -55,7 +55,7 @@ int CCDStar::setCoverageOnRobotCurrentPosition(double RBx, double RBy, double RB
       }
 			if (1) //(prviput==0) 
 			{
-				double sirina=700.;//550.;//700.;//1530.;//tolko je sirok
+				double sirina=800.;//550.;//700.;//1530.;//tolko je sirok //doking 800 sa 700
 				double duljina=1100;//550.;//1100.;//3005.;
 				double flaill=0.;//700.;//1450.;//tool dodatak na duzinu
 				double flailw=0.;//485.;//tool //to je dodatak na sirinu
@@ -1031,10 +1031,11 @@ printf("(%d,%d) posjecenost raste na %d za (i,j)=(%d,%d) za pomak_x=%d, pomak_y=
 }
 
 void CCDStar::updateCoverageMap(){
-	int okolina=5+20; //plus dva metra sa svake strane jer su rubovi malo izvan, pola metra oko rubova prostora nema mina (za celldim 100 mm) stavljam 0.5 m = 5 polja
+	int okolina=5+0; //plus dva metra sa svake strane jer su rubovi malo izvan, pola metra oko rubova prostora nema mina (za celldim 100 mm) stavljam 0.5 m = 5 polja
   GridMap_cell **gmap=GM->GetMap();//treba zbog prepreka
 	int provjera;
 	int i,j,ti,tj;
+	
 
 	for (i=0; i<MapSizeX; i++){
 		for (j=0; j<MapSizeY; j++){
@@ -1053,21 +1054,21 @@ void CCDStar::updateCoverageMap(){
 			}
 			
 
-//			if (map[i][j].Pp==0){
-//				provjera=0;
-//				for (ix=i-okolina;ix<=i+okolina;ix++){
-//					for (jy=j-okolina;jy<=j+okolina;jy++){
-//						if (IsValid(ix,jy)==2){
-//						  map[i][j].Pp=1;
-//						  provjera=1;
-//						  break;
-//						}
-//					}
-//					if (provjera){
-//						break;
-//					}
-//				}
-//			}
+			if (map[i][j].Pp==0){
+				provjera=0;
+				for (int ix=i-okolina;ix<=i+okolina;ix++){
+					for (int jy=j-okolina;jy<=j+okolina;jy++){
+						if (IsValid(ix,jy)==2){
+						  map[i][j].Pp=1;
+						  provjera=1;
+						  break;
+						}
+					}
+					if (provjera){
+						break;
+					}
+				}
+			}
 
       
 		}
@@ -1931,7 +1932,7 @@ void CCDStar::reset(int ponovo)
 	  preslik.y=-1.;
 	  distance_robot_tool=0.; //900.;
 	  MR=6;//ovo se vise ne koristi - odredjuje se put robota ali se ne gleda
-	  robot_mask=3;//maska toola - sve se prekriva samo s toolom
+	  robot_mask=4;//maska toola - sve se prekriva samo s toolom
 	  redund=0;//ako hocu 1 polje preklapanje onda stavim 1, 2 polja preklapanje stavim 2, 0 bez preklapanja
 	  preklapanje=2*robot_mask-redund;
 	  numcycles=0;
@@ -2186,7 +2187,7 @@ tempgoal.x=-1; tempgoal.y=-1; tempgoal.th=-1;
 			kut_razlika+=2*M_PI;
 		if (kut_razlika>M_PI)
 			kut_razlika-=2*M_PI;
-		if ((path_flag==0) && (fabs(kut_razlika)>M_PI/30 || 0) )  //prva promjena
+		if ((path_flag==0) && (fabs(kut_razlika)>60*M_PI/180 || 0) )  //prva promjena
 		{
 				
 //				printf("prvi segment: kut_razlika=%f, kut_prvi=%f, kut_drugi=%f, infleksija (%f,%f)\n",kut_razlika,kut_prvi,kut,realpathrobot[i-1].x,realpathrobot[i-1].y);
@@ -2196,8 +2197,10 @@ tempgoal.x=-1; tempgoal.y=-1; tempgoal.th=-1;
 				tempgoal.th=kut; //zabiljezi novi kut kao ciljni
         temp=path[i-1];//[i-1]; 
 				printf("prvi segment: kut_razlika=%f, kut_prvi=%f, kut_drugi=kut=%f, infleksija i-1=%d (%f,%f,%f)\n",kut_razlika,kut_prvi,kut,i-1,tempgoal.x,tempgoal.y,tempgoal.th);
-        if ((fabs(WH->RB.x-tempgoal.x)+fabs(WH->RB.y-tempgoal.y))<500.){
+        if ((fabs(WH->RB.x-tempgoal.x)+fabs(WH->RB.y-tempgoal.y))<2500.){//doking
           printf("preblizak cilj trazim dalje\n");
+          path_flag--;
+          kut_prvi=kut;
           continue;
         }
 //        temp.x=(int)(pathrobot[i-1].x);
@@ -2233,52 +2236,52 @@ tempgoal.x=-1; tempgoal.y=-1; tempgoal.th=-1;
 	  tempgoal.th=0;
 	  temp=path[PathLength-1];
 	}
-
-#if RECTANGULAR  
-  int okolina=(int)(ceil(distance_robot_tool/GM->Map_Cell_Size)); //udaljenost toola od robota
-  double difftemp, diffmin=(double)okolina; //pomocna razlika od udaljenosti
-  I_point temp_i;
-  R_point newgoal, rpointpom;
-  temp_i.th=0;
-//  kut_prvi=kut;
-  kut=2*M_PI;
-  for (int ix=temp.x-okolina;ix<=temp.x+okolina;ix++){
-					for (int jy=temp.y-okolina;jy<=temp.y+okolina;jy++){
-						if (IsValid(ix,jy)){
-						  temp_i.x=ix;
-						  temp_i.y=jy;
-						  if ( ((DS->IsValidOri(temp_i))==1) && (DS->howmanyOriCollides(temp_i)==0)){ 
-  						    rpointpom.x=GM->Map_Home.x+temp_i.x*GM->Map_Cell_Size+0.5*GM->Map_Cell_Size;
-  						    rpointpom.y=GM->Map_Home.y+temp_i.y*GM->Map_Cell_Size+0.5*GM->Map_Cell_Size;
-						      rpointpom.th=atan2((tempgoal.y-rpointpom.y),(tempgoal.x-rpointpom.x));
-		              if (rpointpom.th<0.0)
-			              rpointpom.th+=2*M_PI;
-		              kut_razlika=rpointpom.th-kut_prvi; //tempgoal.th;
-		              if (kut_razlika<-1*M_PI)
-			              kut_razlika+=2*M_PI;
-		              if (kut_razlika>M_PI)
-			              kut_razlika-=2*M_PI;
-			            kut_razlika=fabs(kut_razlika);
-                  difftemp=fabs((double)(okolina)-sqrt((temp.y-temp_i.y)*(temp.y-temp_i.y)+(temp.x-temp_i.x)*(temp.x-temp_i.x)));
-						      if (difftemp+kut_razlika<diffmin+kut){
-						        diffmin=difftemp;
-						        kut=kut_razlika;
-						        newgoal=rpointpom;
-					        }
-						  }
-						}
-		      }
-	}
-	if (diffmin<(double)(okolina)){
-//	  tempgoal=newgoal;
-	  //temgoal je sad jos uvijek tool koordinata
-	  tempgoal.x=tempgoal.x-distance_robot_tool*cos(newgoal.th);
-    tempgoal.y=tempgoal.y-distance_robot_tool*sin(newgoal.th);
-    tempgoal.th=newgoal.th;
-	  printf("cilj za robota je pomaknut od toola za %f polja, %f radiana od orijentacije segmenta puta, pomocni cilj (%f,%f,%f), cilj izracnat prema stvarnom pomaku (%f,%f,%f)\n",(double)(okolina)-diffmin,kut,newgoal.x,newgoal.y,newgoal.th, tempgoal.x,tempgoal.y,tempgoal.th);
-	  
-	}
-#endif
+//ovo mi ne radi kak spada kad tool nije odmaknut, provjeri, komentiram umedjuvremenu (za doking)
+//#if RECTANGULAR
+//  int okolina=(int)(ceil(distance_robot_tool/GM->Map_Cell_Size)); //udaljenost toola od robota
+//  double difftemp, diffmin=(double)okolina; //pomocna razlika od udaljenosti
+//  I_point temp_i;
+//  R_point newgoal, rpointpom;
+//  temp_i.th=0;
+////  kut_prvi=kut;
+//  kut=2*M_PI;
+//  for (int ix=temp.x-okolina;ix<=temp.x+okolina;ix++){
+//					for (int jy=temp.y-okolina;jy<=temp.y+okolina;jy++){
+//						if (IsValid(ix,jy)){
+//						  temp_i.x=ix;
+//						  temp_i.y=jy;
+//						  if ( ((DS->IsValidOri(temp_i))==1) && (DS->howmanyOriCollides(temp_i)==0)){ 
+//  						    rpointpom.x=GM->Map_Home.x+temp_i.x*GM->Map_Cell_Size+0.5*GM->Map_Cell_Size;
+//  						    rpointpom.y=GM->Map_Home.y+temp_i.y*GM->Map_Cell_Size+0.5*GM->Map_Cell_Size;
+//						      rpointpom.th=atan2((tempgoal.y-rpointpom.y),(tempgoal.x-rpointpom.x));
+//		              if (rpointpom.th<0.0)
+//			              rpointpom.th+=2*M_PI;
+//		              kut_razlika=rpointpom.th-kut_prvi; //tempgoal.th;
+//		              if (kut_razlika<-1*M_PI)
+//			              kut_razlika+=2*M_PI;
+//		              if (kut_razlika>M_PI)
+//			              kut_razlika-=2*M_PI;
+//			            kut_razlika=fabs(kut_razlika);
+//                  difftemp=fabs((double)(okolina)-sqrt((temp.y-temp_i.y)*(temp.y-temp_i.y)+(temp.x-temp_i.x)*(temp.x-temp_i.x)));
+//						      if (difftemp+kut_razlika<diffmin+kut){
+//						        diffmin=difftemp;
+//						        kut=kut_razlika;
+//						        newgoal=rpointpom;
+//					        }
+//						  }
+//						}
+//		      }
+//	}
+//	if (diffmin<(double)(okolina)){
+////	  tempgoal=newgoal;
+//	  //temgoal je sad jos uvijek tool koordinata
+//	  tempgoal.x=tempgoal.x-distance_robot_tool*cos(newgoal.th);
+//    tempgoal.y=tempgoal.y-distance_robot_tool*sin(newgoal.th);
+//    tempgoal.th=newgoal.th;
+//	  printf("cilj za robota je pomaknut od toola za %f polja, %f radiana od orijentacije segmenta puta, pomocni cilj (%f,%f,%f), cilj izracnat prema stvarnom pomaku (%f,%f,%f)\n",(double)(okolina)-diffmin,kut,newgoal.x,newgoal.y,newgoal.th, tempgoal.x,tempgoal.y,tempgoal.th);
+//	  
+//	}
+//#endif
 return tempgoal;
 }
 
