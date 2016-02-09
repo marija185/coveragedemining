@@ -351,7 +351,7 @@ int CCDStar::planCoveragePath(){
     vremenska_razlika=(mySecNow-mySecStart)*1000+(myMSecNow-myMSecStart);
     printf("CCD prviput: nakon GetPath %d ms\n", vremenska_razlika);
 	}else{
-		if (replanko){ //postavlja ga...za sada main kad je voznja==false, a resetira TSPreplan, TSP, reset 
+		if (replanko && 1){ //postavlja ga...za sada main kad je voznja==false, a resetira TSPreplan, TSP, reset 
 			if (gettimeofday(&timeStart, NULL) == 0)
 			{
 				mySecStart = timeStart.tv_sec;
