@@ -300,6 +300,7 @@ int main(int argc, char** argv)
     if (M->slam_loop==0) { 
     if (gobackwards==false){
     if (M->voznja==false){ //ne vozi
+#if DO_COVERAGE
       CCD->replanko=1;
       int pathflag=CCD->planCoveragePath();//racuna inic put samo jednom, ostalo replanira
       if (CCD->PathLength<=1){
@@ -328,6 +329,7 @@ int main(int argc, char** argv)
         goals.push_back(goal);
         M->gotogoal(goal);
       }
+#endif
     }else{//vozi
     
       if ((CCD->checkIfStuck(numnewcells,M->setvel.v*M->metric,M->setvel.w))){

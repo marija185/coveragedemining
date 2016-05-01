@@ -1,5 +1,6 @@
 #define BEZ_PREKLAPANJA 1
 #define ISPIS 1
+#define DO_COVERAGE 0
 
 #include <DStar.h>
 

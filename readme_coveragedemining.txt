@@ -25,8 +25,8 @@ catkin_make
 
 run the simulation
 roslaunch movingobstaclesrhc clearmapstage.launch (starts only map)
-roslaunch movingobstaclesrhc galerijatest.launch  (make sure navigation is commented)
-roslaunch coveragedemining startcoveragesim.launch (starts only map)
+roslaunch movingobstaclesrhc galerijatest.launch  (make sure navigation is commented, starts only map)
+roslaunch coveragedemining startcoveragesim.launch (starts coverage)
 
 
 run the robot

@@ -48,11 +48,13 @@ int CCDStar::setCoverageOnRobotCurrentPosition(double RBx, double RBy, double RB
 				Start.x=celx;
 				Start.y=cely;
 				Start.th=0;
+#if DO_COVERAGE
       if (prviput) {
         time_stamp_counter=2;
         PL->reset();
         DS->InitOri(Start,Start);//treba zbog maxOri
       }
+#endif
 			if (1) //(prviput==0) 
 			{
 				double sirina=800.;//550.;//700.;//1530.;//tolko je sirok //doking 800 sa 700
