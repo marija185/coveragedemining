@@ -1,11 +1,15 @@
 #define BEZ_PREKLAPANJA 1
 #define ISPIS 1
-#define DO_COVERAGE 0
+#define DO_COVERAGE 1
 
 #include <DStar.h>
 
-static const int x7ofs[ 4 ] = { 0, 9, -9, 0};
-static const int y7ofs[ 4 ] = {-9, 0, 0, 9};
+//static const int x7ofs[ 4 ] = { 0, 9, -9, 0};
+//static const int y7ofs[ 4 ] = {-9, 0, 0, 9};
+//static const int x7ofs[ 4 ] = { 0, 15, -15, 0};
+//static const int y7ofs[ 4 ] = {-15, 0, 0, 15};
+static const int x7ofs[ 4 ] = { 0, 7, -7, 0};
+static const int y7ofs[ 4 ] = {-7, 0, 0, 7};
 //static const int x7ofs[ 4 ] = { 0, 5, -5, 0};
 //static const int y7ofs[ 4 ] = {-5, 0, 0, 5};
 static const int x6ofs[ 4 ] = { 0, 6, -6, 0};
@@ -21,6 +25,8 @@ static const int y6ofs[ 4 ] = {-6, 0, 0, 6};
 #define WH_LOG_DSTAR_PRESAO7			"logger//wh_dstar_presao7.dat"
 #define PATH_ROBOT_X			"logger//path_robot_x.dat"
 #define PATH_ROBOT_Y			"logger//path_robot_y.dat"
+#define PATH_INIT_TOOL_X			"logger//path_init_tool_x.dat"
+#define PATH_INIT_TOOL_Y			"logger//path_init_tool_y.dat"
 #define PATH_TOOL_X			"logger//path_tool_x.dat"
 #define PATH_TOOL_Y			"logger//path_tool_y.dat"
 #define WH_LOG_GRIDMAP_OCCUPANCY				"logger//wh_gridmap_occupancy.dat"

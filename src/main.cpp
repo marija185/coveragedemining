@@ -3,6 +3,7 @@
 #include <WorkHorse.h>    //daje WH
 //// #include "DStar.h"    //daje DS (vise ga ne sadrzi moj.h)
 #include <GridMap.h>    //daje GM
+#include <Planner.h>
 //#include <DynamicWindow.h> //daje DW
 
 #include <CCDStar.h>
@@ -19,7 +20,7 @@ moj *M;
 //extern DStar *DS;
 extern GridMap *GM;
 //extern DynamicWindow *DW;
-//extern Planner *PL;
+extern Planner *PL;
 
 class VisualizationPublisherCCD
 {
@@ -73,9 +74,9 @@ public:
     toolpath.ns =  "coveragedemining";
     toolpath.action = visualization_msgs::Marker::ADD;
     toolpath.pose.orientation.w  = 1.0;
-    toolpath.type = visualization_msgs::Marker::LINE_STRIP;//POINTS; //LINE_STRIP;
-    toolpath.scale.x = 0.05; 
-    toolpath.scale.y = 0.05; 
+    toolpath.type = visualization_msgs::Marker::POINTS; //LINE_STRIP;
+    toolpath.scale.x = 0.25; 
+    toolpath.scale.y = 0.25; 
     toolpath.color.r = 0.;
     toolpath.color.g = 0.;
     toolpath.color.b = 0.8;
@@ -301,7 +302,7 @@ int main(int argc, char** argv)
     if (gobackwards==false){
     if (M->voznja==false){ //ne vozi
 #if DO_COVERAGE
-      CCD->replanko=1;
+      CCD->replanko=0;
       int pathflag=CCD->planCoveragePath();//racuna inic put samo jednom, ostalo replanira
       if (CCD->PathLength<=1){
         std::cerr<<"COVERAGE FINISHED!!! PathLength "<<CCD->PathLength<<std::endl;
@@ -441,6 +442,7 @@ void VisualizationPublisherCCD::visualizationduringmotion(){
 			for (int i=0; i<CCD->MapSizeX; i++){
 				for (int j=0; j<CCD->MapSizeY; j++){
 					if ((CCD->map[i][j].presao>0)){
+//					if ((CCD->map[i][j].DTdostupni>0)){
 					  p.x=(GM->Map_Home.x+i*GM->Map_Cell_Size+0.5*GM->Map_Cell_Size)/metric;
             p.y=(GM->Map_Home.y+j*GM->Map_Cell_Size+0.5*GM->Map_Cell_Size)/metric;
 					  visitedpath.points.push_back(p);

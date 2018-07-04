@@ -57,8 +57,8 @@ int CCDStar::setCoverageOnRobotCurrentPosition(double RBx, double RBy, double RB
 #endif
 			if (1) //(prviput==0) 
 			{
-				double sirina=800.;//550.;//700.;//1530.;//tolko je sirok //doking 800 sa 700
-				double duljina=1100;//550.;//1100.;//3005.;
+				double sirina=500.;//550.;//800.;//1530.;//tolko je sirok //doking 800 sa 700
+				double duljina=500;//550.;//1100.;//3005.;
 				double flaill=0.;//700.;//1450.;//tool dodatak na duzinu
 				double flailw=0.;//485.;//tool //to je dodatak na sirinu
 //				int pomak_x=celx-StartRacunac.x;
@@ -303,7 +303,7 @@ bool CCDStar::checkIfStuck(int numnewcells, double setv, double setw){
 
 
 int CCDStar::planCoveragePath(){
-
+FILE *F6, *F7;
   
   if (prviput){
 		StartRacunac=Start;
@@ -342,6 +342,21 @@ int CCDStar::planCoveragePath(){
 		    printf("CCD prviput> Putanja robot je NULL!\n");
 		    return 2;
 	    }
+				if(((F6=fopen(PATH_INIT_TOOL_X,"wt"))!=NULL)&&((F7=fopen(PATH_INIT_TOOL_Y,"wt"))!=NULL) ){
+
+					for(int i=0;i<PathLength;i++){
+						fprintf(F6,"%d ",path[i].x);
+						fprintf(F7,"%d ",path[i].y);
+					}
+
+					fprintf(F6,"\n"); fprintf(F7,"\n");
+					fclose(F6);  fclose(F7);
+
+
+				}else{
+					printf("Otvaranje filea bezuspjesno!");
+				}
+
     }else{
 	    printf("nesto ne stima\n");
     }
@@ -1033,7 +1048,7 @@ printf("(%d,%d) posjecenost raste na %d za (i,j)=(%d,%d) za pomak_x=%d, pomak_y=
 }
 
 void CCDStar::updateCoverageMap(){
-	int okolina=5+0; //plus dva metra sa svake strane jer su rubovi malo izvan, pola metra oko rubova prostora nema mina (za celldim 100 mm) stavljam 0.5 m = 5 polja
+	int okolina=0+0; //plus dva metra sa svake strane jer su rubovi malo izvan, pola metra oko rubova prostora nema mina (za celldim 100 mm) stavljam 0.5 m = 5 polja
   GridMap_cell **gmap=GM->GetMap();//treba zbog prepreka
 	int provjera;
 	int i,j,ti,tj;
@@ -1055,22 +1070,22 @@ void CCDStar::updateCoverageMap(){
 			  gmap[i][j].static_cell=true;
 			}
 			
-
-			if (map[i][j].Pp==0){
-				provjera=0;
-				for (int ix=i-okolina;ix<=i+okolina;ix++){
-					for (int jy=j-okolina;jy<=j+okolina;jy++){
-						if (IsValid(ix,jy)==2){
-						  map[i][j].Pp=1;
-						  provjera=1;
-						  break;
-						}
-					}
-					if (provjera){
-						break;
-					}
-				}
-			}
+//ipak treba ovo za rubove jer titra uz rub previse
+//			if (map[i][j].Pp==0){
+//				provjera=0;
+//				for (int ix=i-okolina;ix<=i+okolina;ix++){
+//					for (int jy=j-okolina;jy<=j+okolina;jy++){
+//						if (IsValid(ix,jy)==2){
+//						  map[i][j].Pp=-2;
+//						  provjera=1;
+//						  break;
+//						}
+//					}
+//					if (provjera){
+//						break;
+//					}
+//				}
+//			}
 
       
 		}
@@ -1118,7 +1133,7 @@ bool CCDStar::TSPreplan(){
 	double pomakR, pomak_kut;
 	double ai1, staripomak_kut;
 	int staripomak_i, staripomak_j, promjenasmjera;
-	int poc_smjer, pomakalata=(int)(ceil(distance_robot_tool/GM->Map_Cell_Size))+1, brojtraz;
+	int poc_smjer, pomakalata=(int)(ceil(distance_robot_tool/GM->Map_Cell_Size))+0, brojtraz;
 	R_point StartR;
 	I_point *pathf;
 	I_point point, temp;
@@ -1132,7 +1147,7 @@ bool CCDStar::TSPreplan(){
 	printf("prepisao iz presao u Pp\n");
 	while(1) { //br_posj<br_praznih){//bezveze uvijet, ide van kad nema sljedeceg
 		//treba spremati u pomocna polja jer se pointeri_TSP prepisu drugima
-		PathLength_forward=0;//ovime se izbjegava slijedjenje puta do daleke tocke, nego samo zadaje cilj
+//		PathLength_forward=0;//ovime se izbjegava slijedjenje puta do daleke tocke, nego samo zadaje cilj
 		for (d=PathLength_forward-2;d>0;d--){//prvi se upisao u proslom koraku, a zadnji tu ispod
 #if (ISPIS)
 			// 			printf("(%d,%d)\t",path_forward[d].x,path_forward[d].y);
@@ -1578,7 +1593,7 @@ printf("izracunao do nesusjednog i dobio cilj=(%d,%d), DT=%d\n",Goal.x,Goal.y,ma
 				break;//patak ovo zakomentiravam
 				
 			}
-#if 0			//sad ne ide preblizu rubovima vise
+#if 1			//1 ide 0 ne ide preblizu rubovima vise
 			susjednaprepreka=0;
 			if ((map[MinCostElemLista.x][MinCostElemLista.y].DTdostupni==0)&& (map[MinCostElemLista.x][MinCostElemLista.y].Pp==0)) susjednaprepreka=1;
 //			for ( int d = 0; d < 8; d++ )
@@ -1592,11 +1607,17 @@ printf("izracunao do nesusjednog i dobio cilj=(%d,%d), DT=%d\n",Goal.x,Goal.y,ma
 //				}
 //			}
 			if (susjednaprepreka==1){
+			int potencijalni=1;
 				for (int i=MinCostElemLista.x-robot_mask;i<=MinCostElemLista.x+robot_mask;i++){
 					for (int j=MinCostElemLista.y-robot_mask;j<=MinCostElemLista.y+robot_mask;j++){
 						if  (IsValid(i,j)==1){
 							
 						if (map[i][j].DTdostupni!=0){
+							Goal.x=i;
+							Goal.y=j;
+							potencijalni=0;
+						}
+						if ((map[i][j].DTdostupni!=0)&&((i==0)||(j==0))){
 //							Goal=MinCostElemLista;
 							Goal.x=i;
 							Goal.y=j;
@@ -1613,6 +1634,7 @@ printf("izracunao do nesusjednog i dobio cilj=(%d,%d), DT=%d\n",Goal.x,Goal.y,ma
 						break;
 					}
 				}
+				if (potencijalni==0) nemavise=0;
 				if (nemavise==0){
 					break;
 				}
@@ -1934,7 +1956,7 @@ void CCDStar::reset(int ponovo)
 	  preslik.y=-1.;
 	  distance_robot_tool=0.; //900.;
 	  MR=6;//ovo se vise ne koristi - odredjuje se put robota ali se ne gleda
-	  robot_mask=4;//maska toola - sve se prekriva samo s toolom
+	  robot_mask=3;//maska toola - sve se prekriva samo s toolom
 	  redund=0;//ako hocu 1 polje preklapanje onda stavim 1, 2 polja preklapanje stavim 2, 0 bez preklapanja
 	  preklapanje=2*robot_mask-redund;
 	  numcycles=0;
@@ -2189,7 +2211,7 @@ tempgoal.x=-1; tempgoal.y=-1; tempgoal.th=-1;
 			kut_razlika+=2*M_PI;
 		if (kut_razlika>M_PI)
 			kut_razlika-=2*M_PI;
-		if ((path_flag==0) && (fabs(kut_razlika)>60*M_PI/180 || 0) )  //prva promjena
+		if ((path_flag==0) && (fabs(kut_razlika)>6*M_PI/180 || 0) )  //prva promjena
 		{
 				
 //				printf("prvi segment: kut_razlika=%f, kut_prvi=%f, kut_drugi=%f, infleksija (%f,%f)\n",kut_razlika,kut_prvi,kut,realpathrobot[i-1].x,realpathrobot[i-1].y);
@@ -2199,7 +2221,7 @@ tempgoal.x=-1; tempgoal.y=-1; tempgoal.th=-1;
 				tempgoal.th=kut; //zabiljezi novi kut kao ciljni
         temp=path[i-1];//[i-1]; 
 				printf("prvi segment: kut_razlika=%f, kut_prvi=%f, kut_drugi=kut=%f, infleksija i-1=%d (%f,%f,%f)\n",kut_razlika,kut_prvi,kut,i-1,tempgoal.x,tempgoal.y,tempgoal.th);
-        if ((fabs(WH->RB.x-tempgoal.x)+fabs(WH->RB.y-tempgoal.y))<2500.){//doking
+        if ((fabs(WH->RB.x-tempgoal.x)+fabs(WH->RB.y-tempgoal.y))<100.){//doking
           printf("preblizak cilj trazim dalje\n");
           path_flag--;
           kut_prvi=kut;
@@ -2218,7 +2240,7 @@ tempgoal.x=-1; tempgoal.y=-1; tempgoal.th=-1;
 		    tempgoal=realpathtool[i-1];//[i-1];
 		    tempgoal.th=kut;
         temp=path[i-1];//[i-1];
-		    if ((fabs(WH->RB.x-tempgoal.x)+fabs(WH->RB.y-tempgoal.y))<300.){
+		    if ((fabs(WH->RB.x-tempgoal.x)+fabs(WH->RB.y-tempgoal.y))<100.){
           continue;
         }
 //        temp.x=(int)(pathrobot[i-1].x);

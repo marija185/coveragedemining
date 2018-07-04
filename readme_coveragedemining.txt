@@ -24,8 +24,12 @@ compiling:
 catkin_make
 
 run the simulation
+1. terminal (one line only)
 roslaunch movingobstaclesrhc clearmapstage.launch (starts only map)
 roslaunch movingobstaclesrhc galerijatest.launch  (make sure navigation is commented, starts only map)
+roslaunch movingobstaclesrhc galerijaicent.yaml (icent map)
+
+2. terminal
 roslaunch coveragedemining startcoveragesim.launch (starts coverage)
 
 
